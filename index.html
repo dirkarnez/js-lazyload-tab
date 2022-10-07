@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Style the tab */
+        .tabs {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        /* Style the buttons inside the tab */
+        .tabs button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        .tabs button:hover {
+            background-color: #ddd;
+        }
+
+        .tab-content {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="tab-container">
+        <div class="tabs">
+            <button data-load="tab0">tab0</button>
+            <button data-load="tab1">tab1</button>
+        </div>
+        <div class="tab-content">
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const tabsList = document.getElementsByClassName("tabs");
+            const tabs1 = tabsList[0];
+
+            var loadMap = {};
+            Array.from(tabs1.children).forEach(node => {
+                const load = node.dataset.load;
+                node.addEventListener("click", function (e) {
+                    if (!!loadMap[load]) {
+                        // TODO display none all then display self
+                        return;
+                    }
+
+                    fetch(`./${load}.js`)
+                        .then(response => response.blob())
+                        .then(data => {
+                            data.text().then(a => {
+                                const tabContent = document.getElementsByClassName("tab-content")[0]; // lazy code;
+                                tabContent.innerHTML = "";
+                                const param0 = Object.keys({ node })[0];
+                                const param1 = Object.keys({ tabContent })[0];
+                                (function () {
+                                    // first eval: unescape string to js code string
+                                    // second eval: eval js code string
+                                    eval(eval(a));
+                                    loadMap[load] = true;
+                                })(param0, param1);
+                            })
+                        });
+                });
+            });
+            tabs1.children[0].click();
+        })();
+    </script>
+</body>
+
+</html>
