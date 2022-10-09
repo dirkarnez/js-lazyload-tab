@@ -1,5 +1,4 @@
 `((__node, __tabContent, __inject) => {
-    debugger;
     // create a new div element
     const newDiv = document.createElement("div");
    

@@ -47,39 +47,57 @@
         </div>
     </div>
 
+    <div class="tab-container">
+        <div class="tabs">
+            <button data-load="tab0">tab0</button>
+            <button data-load="tab1">tab1</button>
+        </div>
+        <div class="tab-content">
+        </div>
+    </div>
+
     <script>
         (function () {
-            const tabsList = document.getElementsByClassName("tabs");
-            const tabs1 = tabsList[0];
+            Array
+            .from(document.getElementsByClassName("tab-container"))
+            .forEach(tabContainer => {
+                const tabs = tabContainer.getElementsByClassName("tabs")[0];
+                const tabContent = tabContainer.getElementsByClassName("tab-content")[0];
 
-            var loadMap = {};
-            Array.from(tabs1.children).forEach(node => {
-                const load = node.dataset.load;
-                node.addEventListener("click", function (e) {
-                    if (!!loadMap[load]) {
-                        // TODO display none all then display self
-                        return;
-                    }
+                var loadMap = {};
+                Array
+                .from(tabs.children)
+                .forEach(tabsButton => {
+                    const load = tabsButton.dataset.load;
 
-                    fetch(`./${load}.js`)
-                        .then(response => response.blob())
-                        .then(data => {
-                            data.text().then(a => {
-                                const tabContent = document.getElementsByClassName("tab-content")[0]; // lazy code;
-                                tabContent.innerHTML = "";
-                                const param0 = Object.keys({ node })[0];
+                    tabsButton.addEventListener("click", function (e) {
+                        tabContent.innerHTML = "";
+
+                        if (!!loadMap[load]) {
+                            // second eval: eval js code string
+                            eval(loadMap[load]);
+                            return;
+                        }
+
+                        fetch(`./${load}.js`)
+                            .then(response => response.blob())
+                            .then(data => data.text())
+                            .then(a => {
+                                const param0 = Object.keys({ tabsButton })[0];
                                 const param1 = Object.keys({ tabContent })[0];
+
                                 (function () {
                                     // first eval: unescape string to js code string
+                                    loadMap[load] = eval(a);
+
                                     // second eval: eval js code string
-                                    eval(eval(a));
-                                    loadMap[load] = true;
+                                    eval(loadMap[load]);
                                 })(param0, param1);
                             })
-                        });
+                    });
                 });
+                tabs.children[0].click();
             });
-            tabs1.children[0].click();
         })();
     </script>
 </body>
